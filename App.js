@@ -1,5 +1,5 @@
 import React, {Component} from "react";
-import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput } from "react-native";
+import { StyleSheet, Text, View, SafeAreaView, TouchableOpacity, TextInput, FlatList } from "react-native";
 import {Ionicons} from '@expo/vector-icons'
 import BookCount from './components/BookCount'
 
@@ -36,6 +36,32 @@ export default class App extends Component {
     })
   }
 
+  markAsRead =(selectedBook, index)=>{
+    let newList = this.state.books.filter(book=> book !== selectedBook)
+    console.log(newList)
+    this.setState((prevState)=> ({
+      books:newList,
+      readingCount:prevState.readingCount -1 ,
+      readCount:prevState.readCount +1
+    }))
+  }
+
+
+  renderItem =(item,index)=>{
+    return(
+      <View style={{height:50,flexDirection:'row'}}>
+<View style={{flex:1, justifyContent:'center', paddingLeft:5}}>
+<Text >{item}</Text>
+</View>
+<TouchableOpacity onPress={()=>this.markAsRead(item, index)}>
+          <View style={{height:50, width:100, backgroundColor:'#38C327', alignItems:'center', justifyContent:'center'}}>
+          <Text style={{color:'#FFF',fontWeight:'bold'}}>Mark as Read</Text>
+          </View>
+          </TouchableOpacity>
+      </View>
+    )
+  }
+
   render(){
     return (
       <View style={styles.container}>
@@ -63,12 +89,27 @@ export default class App extends Component {
           <Ionicons name='ios-checkmark' size={40} color='#FFF'/>
           </View>
           </TouchableOpacity>
+
           <TouchableOpacity onPress={this.hideAddNewBook}>
           <View style={{height:50, width:50, backgroundColor:'#EA1011', alignItems:'center', justifyContent:'center'}}>
           <Ionicons name='ios-close' size={40} color='#FFF'/>
           </View>
           </TouchableOpacity>
+
         </View>)}
+
+        <FlatList
+  data={this.state.books}
+  renderItem={({item}, index)=> this.renderItem(item,index)}
+  keyExtractor={(item,index)=> index.toString()}
+  ListEmptyComponent={
+  <View style={{marginTop:50, alignItems:'center'}}>
+<Text style={{fontSize:22, fontWeight:'bold'}}>Not Reading Any Books</Text>
+  </View>
+  }
+/>
+
+
           <TouchableOpacity style={{position:'absolute', bottom:20, right:20}}
           onPress={this.showAddNewBook }
           >
@@ -78,6 +119,8 @@ export default class App extends Component {
             <Text style={{color:'#FFF', fontSize:30}}>+</Text>
           </View>
           </TouchableOpacity>
+
+
         </View>
         <View
           style={{
@@ -94,7 +137,7 @@ export default class App extends Component {
         </View>
         <SafeAreaView />
       </View>
-    );
+    )
   }
 }
 
@@ -103,4 +146,4 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFF"
   }
-});
+})
